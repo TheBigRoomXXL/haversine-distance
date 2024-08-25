@@ -11,7 +11,7 @@ func withinTolerance(a, b, e float64) bool {
 	return d < e
 }
 
-func TestBasicHaversineDistances(t *testing.T) {
+func TestBaselineHaversineDistances(t *testing.T) {
 	// [x0, y0, x1, y1, expectedresult]
 	var tests = [][5]float64{
 		{0, 0, 90, 90, 10010.370831},
@@ -27,8 +27,8 @@ func TestBasicHaversineDistances(t *testing.T) {
 	for i, test := range tests {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 
-			result := HaversineDistance(test[0], test[1], test[2], test[3], EARTH_RADIUS)
-			if !withinTolerance(result, test[4], 0.001) {
+			result := baselineHaversineDistance(test[0], test[1], test[2], test[3], EARTH_RADIUS)
+			if !withinTolerance(result, test[4], 0.000001) {
 				t.Errorf("want %f, got %f", test[4], result)
 			}
 		})
