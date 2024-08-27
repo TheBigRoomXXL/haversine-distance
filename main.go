@@ -122,3 +122,8 @@ func main() {
 	}
 
 }
+
+var implementations = map[string]func(string) (float64, int){
+	"v0": v0,
+	"v1": v1,
+}
