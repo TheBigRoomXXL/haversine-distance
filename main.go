@@ -30,7 +30,8 @@ func GenerateDataset(n uint64) [][4]float64 {
 	}
 
 	chunk := n / 10
-	for i := uint64(0); i < 10; i += 1 {
+	fmt.Println(chunk)
+	for i := uint64(0); i < n; i += chunk {
 		x0 := rand.Float64()*350 - 170
 		y0 := rand.Float64()*170 - 80
 		x1 := rand.Float64()*350 - 170

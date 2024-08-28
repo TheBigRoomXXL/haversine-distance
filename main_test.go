@@ -59,12 +59,10 @@ func benchmarkV1(filename string, b *testing.B) {
 	}
 }
 
-func BenchmarkV0_10(b *testing.B)         { benchmarkV0("data/10.json", b) }
-func BenchmarkV0_100(b *testing.B)        { benchmarkV0("data/100.json", b) }
-func BenchmarkV0_10_000(b *testing.B)     { benchmarkV0("data/10000.json", b) }
-func BenchmarkV0_10_000_000(b *testing.B) { benchmarkV0("data/1000000.json", b) }
+func BenchmarkV0_200(b *testing.B)       { benchmarkV0("data/200.json", b) }
+func BenchmarkV0_40_000(b *testing.B)    { benchmarkV0("data/40000.json", b) }
+func BenchmarkV0_1_000_000(b *testing.B) { benchmarkV0("data/1000000.json", b) }
 
-func BenchmarkV1_10(b *testing.B)         { benchmarkV1("data/10.json", b) }
-func BenchmarkV1_100(b *testing.B)        { benchmarkV1("data/100.json", b) }
-func BenchmarkV1_10_000(b *testing.B)     { benchmarkV1("data/10000.json", b) }
-func BenchmarkV1_10_000_000(b *testing.B) { benchmarkV1("data/1000000.json", b) }
+func BenchmarkV1_200(b *testing.B)       { benchmarkV1("data/200.json", b) }
+func BenchmarkV1_40_000(b *testing.B)    { benchmarkV1("data/40000.json", b) }
+func BenchmarkV1_1_000_000(b *testing.B) { benchmarkV1("data/1000000.json", b) }
