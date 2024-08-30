@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 	"os"
@@ -33,8 +34,7 @@ func GenerateDataset(n uint64) {
 	result := float64(0)
 
 	if n%10 != 0 {
-		fmt.Println("N must be a multiple of 10")
-		os.Exit(1)
+		log.Fatal("N must be a multiple of 10")
 	}
 
 	chunk := n / 10
@@ -64,29 +64,25 @@ func GenerateDataset(n uint64) {
 	// Save data to JSON
 	file, err := os.Create("data/" + strconv.Itoa(int(n)) + ".json")
 	if err != nil {
-		fmt.Println("could not create a file to save json data:", err)
-		os.Exit(1)
+		log.Fatal("could not create a file to save json data:", err)
 	}
 	defer file.Close()
 
 	output, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		fmt.Println("could not serialize generated data to json:", err)
-		os.Exit(1)
+		log.Fatal("could not serialize generated data to json:", err)
 	}
 
 	_, err = file.Write(output)
 	if err != nil {
-		fmt.Println("could not save data to file:", err)
-		os.Exit(1)
+		log.Fatal("could not save data to file:", err)
 	}
 	file.Sync()
 
 	// Save result separatly
 	fileResult, err := os.Create("data/" + strconv.Itoa(int(n)))
 	if err != nil {
-		fmt.Println("could not create a file to save json data:", err)
-		os.Exit(1)
+		log.Fatal("could not create a file to save json data:", err)
 	}
 	defer fileResult.Close()
 
@@ -95,8 +91,7 @@ func GenerateDataset(n uint64) {
 
 	_, err = fileResult.WriteString(resultString)
 	if err != nil {
-		fmt.Println("could not save data to file:", err)
-		os.Exit(1)
+		log.Fatal("could not save data to file:", err)
 	}
 	fileResult.Sync()
 
@@ -105,8 +100,7 @@ func GenerateDataset(n uint64) {
 func main() {
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'generate' or 'process' subcommands")
-		os.Exit(1)
+		log.Fatal("expected 'generate' or 'process' subcommands")
 	}
 
 	switch os.Args[1] {
@@ -120,7 +114,7 @@ func main() {
 		if len(os.Args) > 2 {
 			n, err := strconv.ParseUint(os.Args[2], 10, 64)
 			if err != nil {
-				fmt.Println("bad usage: the number of points to generate is expected")
+				log.Fatal("bad usage: the number of points to generate is expected")
 			}
 			GenerateDataset(n)
 			return
@@ -128,14 +122,12 @@ func main() {
 		GenerateDataset(uint64(1_000_000))
 	case "process":
 		if len(os.Args) != 4 {
-			fmt.Println("bad usage: the implementation and the filepath to the data are expected")
-			os.Exit(1)
+			log.Fatal("bad usage: the implementation and the filepath to the data are expected")
 		}
 
 		processor, ok := processors[os.Args[2]]
 		if !ok {
-			fmt.Println("bad usage: unknown implementation")
-			os.Exit(1)
+			log.Fatal("bad usage: unknown implementation")
 		}
 		start := time.Now()
 		result, n := processor(os.Args[3])
@@ -145,8 +137,7 @@ func main() {
 		fmt.Printf("  ↳ %f µs/calc\n", float64(perf.Microseconds())/float64(n))
 
 	default:
-		fmt.Println("bad usage: 'generate' or 'process' subcommands are expected")
-		os.Exit(1)
+		log.Fatal("bad usage: 'generate' or 'process' subcommands are expected")
 	}
 
 }

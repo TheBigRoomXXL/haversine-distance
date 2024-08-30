@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
+	"log"
 	"math"
 	"os"
 	"strconv"
@@ -44,6 +44,9 @@ func jsonToData(reader io.Reader) []Pair {
 	for scanner.Scan() {
 		text := scanner.Text()
 		if !isFloatChar(text) {
+			if text == "x" || text == "y" {
+				scanner.Scan()
+			}
 			continue
 		}
 
@@ -97,12 +100,10 @@ func v1HaversineDistance(pair Pair, radius float64) float64 {
 func v1(filepath string) (float64, int) {
 	file, err := os.Open(filepath)
 	if err != nil {
-		fmt.Println("failed to open the data file")
-		os.Exit(1)
+		log.Fatal("failed to open the data file")
 	}
 
 	data := jsonToData(file)
-	fmt.Println(len(data))
 
 	sum := 0.0
 	for i := 0; i < len(data); i++ {

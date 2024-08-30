@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"log"
 	"math"
 	"os"
 )
@@ -29,21 +29,18 @@ func v0HaversineDistance(pair Pair, radius float64) float64 {
 func v0(filepath string) (float64, int) {
 	file, err := os.Open(filepath)
 	if err != nil {
-		fmt.Println("failed to open the data file")
-		os.Exit(1)
+		log.Fatal("failed to open the data file")
 	}
 
 	jsonBytes, err := io.ReadAll(file)
 	if err != nil {
-		fmt.Println("failed to read the data file", err)
-		os.Exit(1)
+		log.Fatal("failed to read the data file", err)
 	}
 
 	data := []Pair{}
 	err = json.Unmarshal(jsonBytes, &data)
 	if err != nil {
-		fmt.Println("failed to parse JSON", err)
-		os.Exit(1)
+		log.Fatal("failed to parse JSON", err)
 	}
 
 	sum := 0.0
