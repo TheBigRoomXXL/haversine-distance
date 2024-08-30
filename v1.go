@@ -102,6 +102,7 @@ func v1(filepath string) (float64, int) {
 	}
 
 	data := jsonToData(file)
+	fmt.Println(len(data))
 
 	sum := 0.0
 	for i := 0; i < len(data); i++ {

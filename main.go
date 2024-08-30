@@ -132,7 +132,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		processor, ok := implementations[os.Args[2]]
+		processor, ok := processors[os.Args[2]]
 		if !ok {
 			fmt.Println("bad usage: unknown implementation")
 			os.Exit(1)
@@ -151,7 +151,12 @@ func main() {
 
 }
 
-var implementations = map[string]func(string) (float64, int){
+var processors = map[string]func(string) (float64, int){
 	"v0": v0,
 	"v1": v1,
+}
+
+var distances = map[string]func(Pair, float64) float64{
+	"v0": v0HaversineDistance,
+	"v1": v1HaversineDistance,
 }
