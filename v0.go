@@ -8,13 +8,11 @@ import (
 	"os"
 )
 
-func v0HaversineDistance(
-	x0 float64, y0 float64, x1 float64, y1 float64, radius float64,
-) float64 {
-	lat0 := y0
-	lat1 := y1
-	lon0 := x0
-	lon1 := x1
+func v0HaversineDistance(pair Pair, radius float64) float64 {
+	lat0 := pair.Y0
+	lat1 := pair.Y1
+	lon0 := pair.X0
+	lon1 := pair.X1
 
 	dLat := degreeToRadians(lat1 - lat0)
 	dLon := degreeToRadians(lon1 - lon0)
@@ -41,14 +39,16 @@ func v0(filepath string) (float64, int) {
 		os.Exit(1)
 	}
 
-	data := [][4]float64{}
-	json.Unmarshal(jsonBytes, &data)
+	data := []Pair{}
+	err = json.Unmarshal(jsonBytes, &data)
+	if err != nil {
+		fmt.Println("failed to parse JSON", err)
+		os.Exit(1)
+	}
 
 	sum := 0.0
 	for i := 0; i < len(data); i++ {
-		dist := v0HaversineDistance(
-			data[i][0], data[i][1], data[i][2], data[i][3], EARTH_RADIUS,
-		)
+		dist := v0HaversineDistance(data[i], EARTH_RADIUS)
 		sum += dist
 
 	}

@@ -9,13 +9,6 @@ import (
 	"strconv"
 )
 
-type Pair struct {
-	x0 float64
-	y0 float64
-	x1 float64
-	y1 float64
-}
-
 var FLORAT_CHAR = [12]string{
 	"-",
 	".",
@@ -70,10 +63,10 @@ func jsonToData(reader io.Reader) []Pair {
 
 		if i == 4 {
 			data = append(data, Pair{
-				x0: stack[0],
-				y0: stack[1],
-				x1: stack[2],
-				y1: stack[3],
+				X0: stack[0],
+				Y0: stack[1],
+				X1: stack[2],
+				Y1: stack[3],
 			})
 			i = 0
 		}
@@ -82,13 +75,12 @@ func jsonToData(reader io.Reader) []Pair {
 	return data
 }
 
-func v1HaversineDistance(
-	x0 float64, y0 float64, x1 float64, y1 float64, radius float64,
-) float64 {
-	lat0 := y0
-	lat1 := y1
-	lon0 := x0
-	lon1 := x1
+// Same as V0
+func v1HaversineDistance(pair Pair, radius float64) float64 {
+	lat0 := pair.Y0
+	lat1 := pair.Y1
+	lon0 := pair.X0
+	lon1 := pair.X1
 
 	dLat := degreeToRadians(lat1 - lat0)
 	dLon := degreeToRadians(lon1 - lon0)
@@ -113,9 +105,7 @@ func v1(filepath string) (float64, int) {
 
 	sum := 0.0
 	for i := 0; i < len(data); i++ {
-		dist := v0HaversineDistance(
-			data[i].x0, data[i].y0, data[i].x1, data[i].y1, EARTH_RADIUS,
-		)
+		dist := v0HaversineDistance(data[i], EARTH_RADIUS)
 		sum += dist
 
 	}

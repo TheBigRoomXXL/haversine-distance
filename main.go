@@ -13,6 +13,13 @@ import (
 const NB_CLUSTER = 16
 const EARTH_RADIUS = 6372.8
 
+type Pair struct {
+	X0 float64 `json:"x0"`
+	Y0 float64 `json:"y0"`
+	X1 float64 `json:"x1"`
+	Y1 float64 `json:"y1"`
+}
+
 func square(f float64) float64 {
 	return f * f
 }
@@ -21,8 +28,9 @@ func degreeToRadians(degrees float64) float64 {
 	return degrees * math.Pi / 180
 }
 
-func GenerateDataset(n uint64) [][4]float64 {
-	data := make([][4]float64, n)
+func GenerateDataset(n uint64) {
+	data := make([]Pair, n)
+	result := float64(0)
 
 	if n%10 != 0 {
 		fmt.Println("N must be a multiple of 10")
@@ -30,7 +38,6 @@ func GenerateDataset(n uint64) [][4]float64 {
 	}
 
 	chunk := n / 10
-	fmt.Println(chunk)
 	for i := uint64(0); i < n; i += chunk {
 		x0 := rand.Float64()*350 - 170
 		y0 := rand.Float64()*170 - 80
@@ -43,15 +50,18 @@ func GenerateDataset(n uint64) [][4]float64 {
 			xoffset1 := rand.Float64() * 10
 			yoffset1 := rand.Float64() * 10
 
-			data[i+j] = [4]float64{
+			pair := Pair{
 				x0 + xoffset0,
 				y0 + yoffset0,
 				x1 + xoffset1,
 				y1 + yoffset1,
 			}
+			result += v0HaversineDistance(pair, EARTH_RADIUS)
+			data[i+j] = pair
 		}
 	}
 
+	// Save data to JSON
 	file, err := os.Create("data/" + strconv.Itoa(int(n)) + ".json")
 	if err != nil {
 		fmt.Println("could not create a file to save json data:", err)
@@ -72,7 +82,24 @@ func GenerateDataset(n uint64) [][4]float64 {
 	}
 	file.Sync()
 
-	return data
+	// Save result separatly
+	fileResult, err := os.Create("data/" + strconv.Itoa(int(n)))
+	if err != nil {
+		fmt.Println("could not create a file to save json data:", err)
+		os.Exit(1)
+	}
+	defer fileResult.Close()
+
+	result = result / float64(n)
+	resultString := fmt.Sprintf("%g", result)
+
+	_, err = fileResult.WriteString(resultString)
+	if err != nil {
+		fmt.Println("could not save data to file:", err)
+		os.Exit(1)
+	}
+	fileResult.Sync()
+
 }
 
 func main() {
