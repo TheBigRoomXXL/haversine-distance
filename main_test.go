@@ -46,10 +46,12 @@ func testHaversine(t *testing.T, version string) {
 
 func TestHaversineV0(t *testing.T) { testHaversine(t, "v0") }
 func TestHaversineV1(t *testing.T) { testHaversine(t, "v1") }
+func TestHaversineV2(t *testing.T) { testHaversine(t, "v2") }
 
 // ============== TEST PROCESSOR ==============
 
 func testProcessor(t *testing.T, n int, version string) {
+
 	dataFile := "data/" + strconv.Itoa(int(n)) + ".json"
 	resultFile := "data/" + strconv.Itoa(int(n))
 
@@ -76,10 +78,13 @@ func TestProcessorV0_200(t *testing.T)  { testProcessor(t, 200, "v0") }
 func TestProcessorV0_3000(t *testing.T) { testProcessor(t, 3000, "v0") }
 func TestProcessorV1_200(t *testing.T)  { testProcessor(t, 200, "v1") }
 func TestProcessorV1_3000(t *testing.T) { testProcessor(t, 3000, "v1") }
+func TestProcessorV2_200(t *testing.T)  { testProcessor(t, 200, "v2") }
+func TestProcessorV2_3000(t *testing.T) { testProcessor(t, 3000, "v2") }
 
 // ============== BENCHMARKS ===============
 
 func benchmark(b *testing.B, n int, version string) {
+	os.Stdout, _ = os.Open(os.DevNull)
 	processor := processors[version]
 	dataFile := "data/" + strconv.Itoa(int(n)) + ".json"
 	for n := 0; n < b.N; n++ {
@@ -87,9 +92,14 @@ func benchmark(b *testing.B, n int, version string) {
 	}
 }
 
-func Benchmark_V0_200(b *testing.B)    { benchmark(b, 200, "v0") }
-func Benchmark_V0_40000(b *testing.B)  { benchmark(b, 40000, "v0") }
+// func Benchmark_V0_200(b *testing.B)    { benchmark(b, 200, "v0") }
+// func Benchmark_V0_40000(b *testing.B)  { benchmark(b, 40000, "v0") }
 func Benchmark_V0_500000(b *testing.B) { benchmark(b, 500000, "v0") }
-func Benchmark_V1_200(b *testing.B)    { benchmark(b, 200, "v1") }
-func Benchmark_V1_40000(b *testing.B)  { benchmark(b, 40000, "v1") }
+
+// func Benchmark_V1_200(b *testing.B)    { benchmark(b, 200, "v1") }
+// func Benchmark_V1_40000(b *testing.B)  { benchmark(b, 40000, "v1") }
 func Benchmark_V1_500000(b *testing.B) { benchmark(b, 500000, "v1") }
+
+// func Benchmark_V2_200(b *testing.B)    { benchmark(b, 200, "v2") }
+// func Benchmark_V2_40000(b *testing.B)  { benchmark(b, 40000, "v2") }
+func Benchmark_V2_500000(b *testing.B) { benchmark(b, 500000, "v2") }

@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-var FLORAT_CHAR = [12]string{
+var FLOAT_CHAR = [12]string{
 	"-",
 	".",
 	"0",
@@ -24,8 +24,8 @@ var FLORAT_CHAR = [12]string{
 	"9",
 }
 
-func isFloatChar(a string) bool {
-	for _, b := range FLORAT_CHAR {
+func v1IsFloatChar(a string) bool {
+	for _, b := range FLOAT_CHAR {
 		if b == a {
 			return true
 		}
@@ -33,7 +33,7 @@ func isFloatChar(a string) bool {
 	return false
 }
 
-func jsonToData(reader io.Reader) []Pair {
+func v1JsonToData(reader io.Reader) []Pair {
 	data := []Pair{}
 	stack := [4]float64{}
 	i := uint8(0)
@@ -43,7 +43,7 @@ func jsonToData(reader io.Reader) []Pair {
 
 	for scanner.Scan() {
 		text := scanner.Text()
-		if !isFloatChar(text) {
+		if !v1IsFloatChar(text) {
 			if text == "x" || text == "y" {
 				scanner.Scan()
 			}
@@ -51,7 +51,7 @@ func jsonToData(reader io.Reader) []Pair {
 		}
 
 		for scanner.Scan() {
-			if !isFloatChar(scanner.Text()) {
+			if !v1IsFloatChar(scanner.Text()) {
 				break
 			}
 			text += scanner.Text()
@@ -98,13 +98,20 @@ func v1HaversineDistance(pair Pair, radius float64) float64 {
 }
 
 func v1(filepath string) (float64, int) {
+	timings := Timings{name: "V1"}
+	defer timings.Print()
+
+	timings.Step("open")
 	file, err := os.Open(filepath)
 	if err != nil {
 		log.Fatal("failed to open the data file")
 	}
+	defer file.Close()
 
-	data := jsonToData(file)
+	timings.Step("parse")
+	data := v1JsonToData(file)
 
+	timings.Step("compute")
 	sum := 0.0
 	for i := 0; i < len(data); i++ {
 		dist := v0HaversineDistance(data[i], EARTH_RADIUS)
@@ -112,5 +119,8 @@ func v1(filepath string) (float64, int) {
 
 	}
 	result := sum / float64(len(data))
+
+	timings.N = len(data)
+	timings.Step("end")
 	return result, len(data)
 }

@@ -97,6 +97,32 @@ func GenerateDataset(n uint64) {
 
 }
 
+type Timings struct {
+	name    string
+	labels  []string
+	timings []time.Time
+	N       int
+}
+
+func (t *Timings) Step(label string) {
+	t.labels = append(t.labels, label)
+	t.timings = append(t.timings, time.Now())
+}
+
+func (t *Timings) Print() {
+	total := t.timings[len(t.timings)-1].Sub(t.timings[0])
+	fmt.Printf(
+		"%s: took %v for %d calculations (%f µs/calc) \n",
+		t.name, total, t.N, float64(total.Microseconds())/float64(t.N),
+	)
+
+	for i := 0; i < len(t.timings)-1; i++ {
+		duration := t.timings[i+1].Sub(t.timings[i])
+		percentage := float64(duration.Microseconds()) / float64(total.Microseconds()) * 100
+		fmt.Printf("  ↳ %s: %.0f%% - %v\n", t.labels[i], percentage, duration)
+	}
+}
+
 func main() {
 
 	if len(os.Args) < 2 {
@@ -129,9 +155,7 @@ func main() {
 		if !ok {
 			log.Fatal("bad usage: unknown implementation")
 		}
-		start := time.Now()
-		result, n := processor(os.Args[3])
-		perf := time.Since(start)
+		result, _ := processor(os.Args[3])
 		fmt.Println("Result:", result, "km")
 
 	default:
@@ -142,9 +166,11 @@ func main() {
 var processors = map[string]func(string) (float64, int){
 	"v0": v0,
 	"v1": v1,
+	"v2": v2,
 }
 
 var distances = map[string]func(Pair, float64) float64{
 	"v0": v0HaversineDistance,
 	"v1": v1HaversineDistance,
+	"v2": v2HaversineDistance,
 }
