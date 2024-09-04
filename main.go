@@ -133,13 +133,10 @@ func main() {
 		result, n := processor(os.Args[3])
 		perf := time.Since(start)
 		fmt.Println("Result:", result, "km")
-		fmt.Printf("⏱ %s took %v for %.d calculations\n", os.Args[2], perf, n)
-		fmt.Printf("  ↳ %f µs/calc\n", float64(perf.Microseconds())/float64(n))
 
 	default:
 		log.Fatal("bad usage: 'generate' or 'process' subcommands are expected")
 	}
-
 }
 
 var processors = map[string]func(string) (float64, int){

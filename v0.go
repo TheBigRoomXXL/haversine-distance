@@ -27,22 +27,30 @@ func v0HaversineDistance(pair Pair, radius float64) float64 {
 }
 
 func v0(filepath string) (float64, int) {
+	timings := Timings{name: "V0"}
+	defer timings.Print()
+
+	timings.Step("open")
 	file, err := os.Open(filepath)
 	if err != nil {
 		log.Fatal("failed to open the data file")
 	}
+	defer file.Close()
 
+	timings.Step("read")
 	jsonBytes, err := io.ReadAll(file)
 	if err != nil {
 		log.Fatal("failed to read the data file", err)
 	}
 
+	timings.Step("parse")
 	data := []Pair{}
 	err = json.Unmarshal(jsonBytes, &data)
 	if err != nil {
 		log.Fatal("failed to parse JSON", err)
 	}
 
+	timings.Step("compute")
 	sum := 0.0
 	for i := 0; i < len(data); i++ {
 		dist := v0HaversineDistance(data[i], EARTH_RADIUS)
@@ -50,5 +58,8 @@ func v0(filepath string) (float64, int) {
 
 	}
 	result := sum / float64(len(data))
+
+	timings.N = len(data)
+	timings.Step("end")
 	return result, len(data)
 }
